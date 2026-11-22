@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>Product Management</title>
+
+    <!-- Bootstrap CSS -->
+    <link
+        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+        rel="stylesheet">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/style.css">
+</head>
+
+<body>
+
+<div class="container-fluid">
+
+    <div class="row">
+
+        <!-- LEFT FILTER SIDEBAR -->
+        <aside class="col-md-2 bg-light p-3 sidebar">
+
+            <h4>Product Filter</h4>
+
+            <form action="/products" method="GET">
+
+                <!-- SIZE FILTER -->
+                <h5 class="mt-3">Size</h5>
+                <hr>
+
+                <% ["S", "M", "L", "XL"].forEach(function(s) { %>
+
+                    <div class="form-check">
+
+                        <input
+                            class="form-check-input"
+                            type="checkbox"
+                            name="size"
+                            value="<%= s %>"
+                            id="size-<%= s %>"
+                            <%= selectedSizes.includes(s) ? "checked" : "" %>>
+
+                        <label
+                            class="form-check-label"
+                            for="size-<%= s %>">
+                            <%= s %>
+                        </label>
+
+                    </div>
+
+                <% }); %>
+
+
+                <!-- COLOR FILTER -->
+                <h5 class="mt-4">Color</h5>
+                <hr>
+
+                <% ["Black", "Blue", "Grey", "Light blue", "Red", "Steel", "White"].forEach(function(c) { %>
+
+                    <div class="form-check">
+
+                        <input
+                            class="form-check-input"
+                            type="checkbox"
+                            name="color"
+                            value="<%= c %>"
+                            id="color-<%= c %>"
+                            <%= selectedColors.includes(c) ? "checked" : "" %>>
+
+                        <label
+                            class="form-check-label"
+                            for="color-<%= c %>">
+                            <%= c %>
+                        </label>
+
+                    </div>
+
+                <% }); %>
+
+
+                <!-- BRAND FILTER -->
+                <h5 class="mt-4">Brand</h5>
+                <hr>
+
+                <% ["HP", "PETER ENGLAND", "SAMSUNG"].forEach(function(b) { %>
+
+                    <div class="form-check">
+
+                        <input
+                            class="form-check-input"
+                            type="checkbox"
+                            name="brand"
+                            value="<%= b %>"
+                            id="brand-<%= b %>"
+                            <%= selectedBrands.includes(b) ? "checked" : "" %>>
+
+                        <label
+                            class="form-check-label"
+                            for="brand-<%= b %>">
+                            <%= b %>
+                        </label>
+
+                    </div>
+
+                <% }); %>
+
+
+                <!-- PRESERVE SEARCH WHEN FILTERING -->
+                <input
+                    type="hidden"
+                    name="search"
+                    value="<%= search %>">
+
+                <button type="submit" class="btn btn-outline-dark mt-3">
+                    Apply Filter
+                </button>
+
+                <a href="/products" class="btn btn-secondary mt-2">
+                    Clear Filters
+                </a>
+
+            </form>
+
+        </aside>
+
+
+        <!-- RIGHT MAIN CONTENT -->
+        <main class="col-md-10">
+
+            <!-- NAVBAR -->
+            <nav class="navbar bg-light px-3">
+
+                <a class="navbar-brand" href="/products">
+                    Home
+                </a>
+
+                <!-- SEARCH FORM -->
+                <form
+                    action="/products"
+                    method="GET"
+                    class="d-flex gap-2">
+
+                    <input
+                        type="search"
+                        name="search"
+                        class="form-control"
+                        placeholder="Enter product name"
+                        value="<%= search %>">
+
+                    <!-- Preserve filters during search -->
+                    <% selectedSizes.forEach(function(s) { %>
+                        <input type="hidden" name="size" value="<%= s %>">
+                    <% }); %>
+
+                    <% selectedColors.forEach(function(c) { %>
+                        <input type="hidden" name="color" value="<%= c %>">
+                    <% }); %>
+
+                    <% selectedBrands.forEach(function(b) { %>
+                        <input type="hidden" name="brand" value="<%= b %>">
+                    <% }); %>
+
+                    <button class="btn btn-outline-success" type="submit">
+                        Search
+                    </button>
+
+                </form>
+
+            </nav>
+
+
+            <!-- PAGE HEADING -->
+            <div class="p-3">
+
+                <h2>All Products</h2>
+
+                <a href="/products/showaddform" class="btn btn-primary mt-3">
+                    Add Product
+                </a>
+                <a href="/products/recyclebin" class="btn btn-primary mt-3">
+                    Recycle bin
+                </a>
+
+            
+
+
+            <!-- PRODUCT CARDS -->
+            <div class="row g-4 px-3 pb-4">
+
+                <% if (products.length === 0) { %>
+
+                    <div class="col-12">
+                        <div class="alert alert-warning">
+                            No products found.
+                        </div>
+                    </div>
+
+                <% } %>
+
+
+                <% products.forEach(function(product, index) { %>
+
+                    <div class="col-12 col-md-6 col-xl-4">
+
+                        <div class="card h-100 product-card">
+
+                            <!-- IMAGE CAROUSEL -->
+                            <div
+                                id="carousel<%= index %>"
+                                class="carousel slide">
+
+                                <div class="carousel-inner">
+
+                                    <div class="carousel-item active">
+
+                                        <% if (product.image) { %>
+
+                                            <img
+                                                src="<%= product.image %>"
+                                                class="card-img-top product-image"
+                                                alt="<%= product.name %>">
+
+                                        <% } else { %>
+
+                                            <div class="no-image">
+                                                No Image
+                                            </div>
+
+                                        <% } %>
+
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+
+                            <!-- PRODUCT NAME AND DESCRIPTION -->
+                            <div class="card-body">
+
+                                <h4 class="card-title">
+                                    <%= product.name %>
+                                </h4>
+
+                                <p class="card-text">
+                                    <%= product.description %>
+                                </p>
+
+                            </div>
+
+
+                            <!-- PRODUCT DETAILS -->
+                            <ul class="list-group list-group-flush">
+
+                                <li class="list-group-item">
+                                    <strong>Price:</strong>
+                                    ₹<%= product.price %>
+                                </li>
+
+                                <li class="list-group-item">
+                                    <strong>Size:</strong>
+                                    <%= product.size.join(", ") %>
+                                </li>
+
+                                <li class="list-group-item">
+                                    <strong>Color:</strong>
+                                    <%= product.color.join(", ") %>
+                                </li>
+
+                                <li class="list-group-item">
+                                    <strong>Brand:</strong>
+                                    <%= product.brand %>
+                                </li>
+
+                            </ul>
+
+
+                            <!-- ACTION BUTTONS -->
+                            <div class="card-body d-flex flex-wrap gap-2">
+
+                                <a
+                                    href="/products/edit/<%= product._id %>"
+                                    class="btn btn-success">
+                                    Edit
+                                </a>
+
+
+                                <form
+                                    action="/products/delete/<%= product._id %>"
+                                    method="POST"
+                                    onsubmit="return confirm('Permanently delete this product and its image?')">
+
+                                    <button
+                                        type="submit"
+                                        class="btn btn-danger">
+                                        Delete
+                                    </button>
+
+                                </form>
+
+
+                                <form
+                                    action="/products/soft-delete/<%= product._id %>"
+                                    method="POST"
+                                    onsubmit="return confirm('want to move to recycle bin')">
+
+                                    <button
+                                        type="submit"
+                                        class="btn btn-warning">
+                                        Recycle Bin
+                                    </button>
+
+                                </form>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                <% }); %>
+
+            </div>
+
+        </main>
+
+    </div>
+
+</div>
+
+</body>
+</html>
